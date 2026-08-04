@@ -236,12 +236,13 @@ def scan_residual(workflow: dict[str, Any]) -> list[str]:
     findings: list[str] = []
 
     for label, pattern in RESIDUAL_PATTERNS:
-        for match in set(re.findall(pattern, blob)):
-            findings.append(f"{label}: {match}")
+        findings.extend(f"{label}: {match}" for match in set(re.findall(pattern, blob)))
 
-    for match in set(IPV4_RE.findall(blob)):
-        if not _ip_is_allowed(match):
-            findings.append(f"non-documentation IPv4: {match}")
+    findings.extend(
+        f"non-documentation IPv4: {match}"
+        for match in set(IPV4_RE.findall(blob))
+        if not _ip_is_allowed(match)
+    )
 
     for node in workflow.get("nodes", []):
         creds = node.get("credentials") or {}

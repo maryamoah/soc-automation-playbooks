@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/your-org/soc-automation-playbooks/schemas/normalized-alert.schema.json",
+  "title": "Normalized event",
+  "description": "The item shape produced by the 'Edit Fields' node and extended by the 'Code in JavaScript' node in the AI SOC Assistant. Status: implemented — this is the real internal data contract of the shipped workflow.",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "The raw text the analyst pasted. Sent to the model verbatim as the user message. Attacker-influenceable; see docs/threat-model.md."
+    },
+    "channel": {
+      "type": "string",
+      "description": "Slack channel ID the event arrived in. Used to route the reply.",
+      "examples": ["C0EXAMPLE001"]
+    },
+    "user": {
+      "type": "string",
+      "description": "Slack user ID of the sender. Compared against SLACK_BOT_USER_ID by the loop guard.",
+      "examples": ["U0EXAMPLE001"]
+    },
+    "thread_ts": {
+      "type": "string",
+      "description": "Thread timestamp. Computed as event.thread_ts || event.ts so the reply lands in the originating thread.",
+      "examples": ["1735689600.000100"]
+    },
+    "=event_type": {
+      "type": "string",
+      "description": "Slack event type. The key name genuinely begins with '=' in the shipped workflow — a stray expression prefix typed into the field-name box. Preserved because this schema documents what runs. Nothing reads it."
+    },
+    "input_type": {
+      "type": "string",
+      "description": "Classification result added by the Code node. Determines Switch routing.",
+      "enum": ["windows", "fortigate", "paloalto", "f5", "cef", "linux", "wazuh_json", "hash", "ip", "general"]
+    },
+    "system_prompt": {
+      "type": "string",
+      "description": "Source-specific analyst prompt, added by whichever Edit Fields2-8 node the Switch selected. Absent for input_type values whose Switch output is not connected (ip, hash, linux)."
+    }
+  },
+  "required": ["message", "channel", "thread_ts"],
+  "additionalProperties": true
+}

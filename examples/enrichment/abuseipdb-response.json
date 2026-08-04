@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "status": "PLANNED - NOT IMPLEMENTED",
+    "note": "The AI SOC Assistant performs no threat-intelligence enrichment. No node in the shipped workflow calls AbuseIPDB. Synthetic reference payload for the planned enrichment stage; see docs/roadmap.md item 4.",
+    "synthetic": true,
+    "indicator_note": "203.0.113.30 is an RFC 5737 documentation address with no real reputation. Values are fabricated."
+  },
+  "raw_provider_response": {
+    "data": {
+      "ipAddress": "203.0.113.30",
+      "isPublic": true,
+      "ipVersion": 4,
+      "isWhitelisted": false,
+      "abuseConfidenceScore": 68,
+      "countryCode": "ZZ",
+      "usageType": "Data Center/Web Hosting/Transit",
+      "isp": "Example Documentation Hosting",
+      "domain": "example.invalid",
+      "hostnames": [],
+      "isTor": false,
+      "totalReports": 41,
+      "numDistinctUsers": 9,
+      "lastReportedAt": "2026-07-29T22:04:11+00:00"
+    }
+  },
+  "normalized": {
+    "indicator": "203.0.113.30",
+    "indicator_type": "ipv4",
+    "source": "abuseipdb",
+    "queried_at": "2026-08-03T09:15:02Z",
+    "found": true,
+    "reputation": "SUSPICIOUS",
+    "score": 68.0,
+    "context": {
+      "country": "ZZ",
+      "is_public": true,
+      "usage_type": "Data Center/Web Hosting/Transit",
+      "last_seen": "2026-07-29T22:04:11Z",
+      "total_reports": 41
+    },
+    "caveats": [
+      "An abuse confidence score is community-reported and is weighted toward noisy scanning sources; hosting and transit ranges accumulate reports regardless of any single tenant.",
+      "Reports concern activity against other networks. They say nothing about whether this event in this environment was malicious.",
+      "Most recent report is several days old; recency should be checked before the score influences an assessment.",
+      "This result is supporting evidence only and must never trigger an automated block."
+    ],
+    "raw_provider_reference": "https://www.abuseipdb.com/check/203.0.113.30"
+  }
+}

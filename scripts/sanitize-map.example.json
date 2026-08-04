@@ -1,0 +1,16 @@
+{
+  "_comment_1": "Copy this file to scripts/sanitize-map.json and replace the keys with the real literals from YOUR environment. sanitize-map.json is git-ignored and must never be committed: its keys ARE the sensitive values.",
+  "_comment_2": "Format is a flat object of {\"literal to find\": \"replacement\"}. Keys are matched as plain substrings, not regex. Order does not matter. Use RFC 5737 documentation addresses (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24) as replacements.",
+  "_comment_3": "Entries below are illustrative placeholders showing the SHAPE of each kind of value. They match nothing real. Delete them.",
+
+  "http://YOUR-OLLAMA-HOST:11434": "OLLAMA_BASE_URL",
+  "YOUR-INTERNAL-SOURCE-IP": "192.0.2.10",
+  "YOUR-INTERNAL-DEST-IP": "192.0.2.20",
+  "YOUR-INTERNAL-CLIENT-IP": "192.0.2.30",
+  "YOUR-REAL-PUBLIC-IP": "198.51.100.20",
+  "YOUR-SLACK-BOT-USER-ID": "SLACK_BOT_USER_ID",
+  "your-org-webhook-path": "ai-soc-assistant",
+  "your-internal-domain.example": "example.com",
+  "YOUR-FIREWALL-HOSTNAME": "FW-EXAMPLE-01",
+  "Your Organisation Name": "Example Org"
+}

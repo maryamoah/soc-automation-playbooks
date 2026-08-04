@@ -1,0 +1,38 @@
+%% AI SOC Assistant — system architecture
+%% Derived from workflows/n8n/ai-soc-assistant/ai-soc-assistant.sanitized.json
+%% Every solid path exists in the export. The dashed path is a real dead end.
+flowchart TD
+    A["Analyst pastes event in Slack"] --> B["Slack Events API"]
+    B -->|"HTTP POST"| C["n8n Webhook<br/>POST /webhook/ai-soc-assistant"]
+
+    C --> D["Normalize event<br/>(Set: message, channel, user, thread_ts)"]
+    D --> E["Loop guard + classifier<br/>(Code node, JavaScript)"]
+
+    E -->|"bot message<br/>or self-authored"| Z(["Drop — return []"])
+    E --> F{"Switch on input_type"}
+
+    F -->|wazuh_json| G1["Wazuh prompt"]
+    F -->|windows| G2["Windows prompt"]
+    F -->|fortigate| G3["FortiGate prompt"]
+    F -->|paloalto| G4["Palo Alto prompt"]
+    F -->|f5| G5["F5 BIG-IP ASM prompt"]
+    F -->|cef| G6["Trend Micro CEF prompt"]
+    F -->|general| G7["General SOC Q&A prompt"]
+    F -.->|"ip / hash / linux<br/>classified but not wired"| X(["No output — see limitations"])
+
+    G1 --> H
+    G2 --> H
+    G3 --> H
+    G4 --> H
+    G5 --> H
+    G6 --> H
+    G7 --> H
+
+    H["LLM (ollama)<br/>POST OLLAMA_BASE_URL/api/chat<br/>model: OLLAMA_MODEL, stream: false"]
+    H --> I["Extract response<br/>(Set: message.content)"]
+    I --> J["Slack: reply in thread<br/>SLACK_CHANNEL_ID / thread_ts"]
+    J --> K["Analyst reviews and decides"]
+
+    style Z fill:#3a3a3a,color:#fff
+    style X fill:#5a3a3a,color:#fff
+    style K fill:#2d4a2d,color:#fff

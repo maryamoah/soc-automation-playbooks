@@ -1,0 +1,111 @@
+This file shows what the AI SOC Assistant ACTUALLY posts to Slack today: plain
+text, no Markdown, sections separated by a blank line, bullets using the "•"
+character. The .json files in this directory are the PLANNED normalized
+structure that a future parsing stage would produce (docs/roadmap.md item 2).
+Nothing in the current workflow emits JSON.
+
+The sample below corresponds to examples/inputs/wazuh-firewall-alert.json and to
+the same event described in suspicious-triage.json. It is illustrative output
+written to match the format the system prompts require; a live model will vary
+in wording. All addresses are RFC 5737 documentation addresses.
+
+════════════════════════════════════════════════════════════════════════
+BEGIN SAMPLE SLACK MESSAGE
+════════════════════════════════════════════════════════════════════════
+
+🔥 FortiGate Security Analysis
+
+Verdict: Suspicious
+
+Severity: Medium
+
+Overall Risk: Low
+
+Confidence: Medium
+
+Summary
+
+FortiGate FG-EDGE-01 denied outbound UDP/161 connection attempts from 192.0.2.10
+to 192.0.2.20 under policy 784.
+
+The logged sessions recorded zero duration with no transferred bytes or packets.
+
+Evidence
+
+• Timestamp: 2026-08-03T09:14:22Z
+• Device: FG-EDGE-01
+• Source IP: 192.0.2.10
+• Source Port: 54122
+• Destination IP: 192.0.2.20
+• Destination Port: 161
+• Protocol: UDP
+• Service: SNMP
+• Action: deny
+• Policy ID: 784
+• Policy Name: TEMP-DENY-LOG
+• Sent Bytes: 0
+• Received Bytes: 0
+• Session Duration: 0
+
+Assessment
+
+The firewall blocked every logged attempt, and the zero byte and packet counters
+confirm that no session was established and no data was exchanged.
+
+The repeated pattern against a single service is consistent with two
+explanations the supplied evidence cannot separate: a monitoring agent retrying
+SNMP polling against a host that no longer permits it, or internal enumeration
+of SNMP services.
+
+The policy name TEMP-DENY-LOG indicates a temporary rule, which raises the
+likelihood that a legitimate service was caught by a recent policy change.
+
+Overall Risk is assessed as Low because the traffic was denied and no compromise
+is demonstrated. The verdict is Suspicious rather than Benign because the
+originating process and business purpose have not been established.
+
+The supplied evidence does not demonstrate reconnaissance, exploitation,
+malware, command and control, or compromise.
+
+Recommended Actions
+
+• Identify the asset and owner of 192.0.2.10 and confirm whether an SNMP
+  monitoring agent is expected to poll 192.0.2.20.
+• Review endpoint telemetry on 192.0.2.10 to determine which process initiated
+  the UDP/161 traffic.
+• Confirm when policy 784 was created and whether it was intended to block this
+  traffic.
+• Correlate historical firewall logs for the same source and service.
+
+Missing Information
+
+• Asset owner and business role of 192.0.2.10
+• Process that initiated the SNMP traffic
+• Change record or intent behind policy 784
+• Historical baseline for SNMP traffic between these hosts
+
+════════════════════════════════════════════════════════════════════════
+END SAMPLE SLACK MESSAGE
+════════════════════════════════════════════════════════════════════════
+
+NOTES FOR REVIEWERS
+
+1. The Wazuh rule carried a MITRE mapping of T1046 (Network Service Discovery).
+   It does not appear in the report. That is correct behaviour: the mapping
+   describes what the detection rule is for, and the supplied evidence does not
+   independently demonstrate that discovery activity occurred.
+
+2. Severity (Medium) and Overall Risk (Low) differ deliberately. Severity
+   describes the immediate operational impact of the observed event; Overall
+   Risk describes the likelihood that it represents a genuine incident after
+   accounting for the fact that the traffic was blocked.
+
+3. The rule fired 14 times. Repetition is reported as an observation, not
+   treated as proof of scanning. Repeated blocked connections alone do not
+   establish reconnaissance, exploitation, malware, C2 or compromise.
+
+4. The numeric Wazuh rule level does not appear anywhere in the output. The
+   prompts require it to be converted to a severity band and never printed.
+
+5. Nothing here is a decision. No block, no isolation, no ticket, no case. The
+   analyst who pasted the alert reads this and decides what happens next.

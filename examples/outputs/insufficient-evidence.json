@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0.0",
+  "verdict": "INSUFFICIENT_EVIDENCE",
+  "confidence": "LOW",
+  "severity": "INFORMATIONAL",
+  "overall_risk": "INFORMATIONAL",
+  "source_type": "wazuh_json",
+  "summary": "The supplied input contains Wazuh detection metadata only. Rule 31151 is recorded as having fired three times with the description 'Multiple web server 400 error codes from same source IP'. No event body, no source or destination addresses, no request details, no hostname and no agent information were supplied.",
+  "evidence": [
+    {
+      "field": "Rule ID",
+      "value": "31151"
+    },
+    {
+      "field": "Fired Times",
+      "value": "3"
+    },
+    {
+      "field": "Timestamp",
+      "value": "2026-08-03T09:48:55Z"
+    }
+  ],
+  "assessment": "The supplied input describes why an alert fired, not what happened. Rule ID, rule level, rule description, alert groups and MITRE mappings are detection metadata; they characterise the detection logic rather than the observed activity, and they are not evidence that any activity occurred as described. Without a source address, a request path, a user agent, a response code or a target host, there is no observable fact against which any explanation can be tested. Repeated HTTP 400 responses from a single source are consistent with automated scanning, but equally consistent with a misconfigured client, a broken integration, or a health check against a changed endpoint. No verdict can be reached from this input, and assigning one would be a guess presented as an assessment. The rule level and the MITRE Active Scanning mapping do not change this: a mapping on a rule is a statement about the rule.",
+  "recommended_actions": [
+    "Retrieve the full Wazuh alert document, including the _source event body, and resubmit it.",
+    "Provide the originating web server access log entries for the alert window.",
+    "Identify the source IP and the requested URIs associated with the 400 responses."
+  ],
+  "missing_information": [
+    "Full alert body (_source), including agent and manager fields",
+    "Source IP address and geolocation context",
+    "Requested URIs and HTTP methods",
+    "HTTP response codes and response sizes",
+    "User-Agent string",
+    "Target host and application",
+    "Request frequency and time window",
+    "Whether any request from the same source succeeded"
+  ],
+  "mitre_attack": [],
+  "analyst_review_required": true,
+  "automated_action_taken": false
+}

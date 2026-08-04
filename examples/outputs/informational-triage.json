@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "verdict": "INFORMATIONAL",
+  "confidence": "HIGH",
+  "severity": "INFORMATIONAL",
+  "overall_risk": "INFORMATIONAL",
+  "source_type": "windows",
+  "summary": "A successful network logon (Event ID 4624, Logon Type 3) was recorded on DC-EXAMPLE-01 for the computer account WKS-EXAMPLE-42$ from 192.0.2.40 using Kerberos authentication.",
+  "evidence": [
+    {
+      "field": "Event ID",
+      "value": "4624"
+    },
+    {
+      "field": "Timestamp",
+      "value": "2026-08-03T09:05:11Z"
+    },
+    {
+      "field": "Target Account",
+      "value": "WKS-EXAMPLE-42$"
+    },
+    {
+      "field": "Account Type",
+      "value": "Computer Account"
+    },
+    {
+      "field": "Domain",
+      "value": "CORP.EXAMPLE"
+    },
+    {
+      "field": "Logon Type",
+      "value": "3"
+    },
+    {
+      "field": "Authentication Package",
+      "value": "Kerberos"
+    },
+    {
+      "field": "Source IP",
+      "value": "192.0.2.40"
+    },
+    {
+      "field": "Hostname",
+      "value": "DC-EXAMPLE-01"
+    }
+  ],
+  "assessment": "The supplied event records a successful Kerberos network logon by a computer account against a domain controller. Computer accounts authenticate routinely as part of Group Policy processing, replication and machine account maintenance, and Logon Type 3 with Kerberos is the expected pattern for that activity. The account name ends with a dollar sign, confirming it is a machine account rather than an interactive user. The supplied evidence does not demonstrate credential theft, lateral movement, or unauthorized access, and there is nothing in the event that distinguishes it from ordinary domain operation.",
+  "recommended_actions": [
+    "No investigative action is required for this event in isolation.",
+    "If this event was surfaced by a correlation rule, review the correlating events rather than this logon."
+  ],
+  "missing_information": [
+    "None"
+  ],
+  "mitre_attack": [],
+  "analyst_review_required": true,
+  "automated_action_taken": false
+}

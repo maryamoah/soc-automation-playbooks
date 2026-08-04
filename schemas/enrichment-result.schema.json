@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maryamoah/soc-automation-playbooks/schemas/enrichment-result.schema.json",
+  "title": "Normalized enrichment result",
+  "description": "PLANNED — NOT IMPLEMENTED. Target normalized shape for threat-intelligence lookups (VirusTotal, AbuseIPDB) once the enrichment stage is built. The AI SOC Assistant currently performs no enrichment; no node in the shipped workflow produces or consumes this structure. Defined now so example payloads and the future implementation agree. See docs/roadmap.md item 4.",
+  "type": "object",
+  "properties": {
+    "indicator": {
+      "type": "string",
+      "description": "The observable that was looked up.",
+      "examples": ["198.51.100.20", "44d88612fea8a8f36de82e1278abb02f"]
+    },
+    "indicator_type": {
+      "type": "string",
+      "enum": ["ipv4", "ipv6", "domain", "url", "md5", "sha1", "sha256"]
+    },
+    "source": {
+      "type": "string",
+      "enum": ["virustotal", "abuseipdb", "opencti", "cortex", "internal"]
+    },
+    "queried_at": { "type": "string", "format": "date-time" },
+    "found": {
+      "type": "boolean",
+      "description": "False means the provider had no record. Absence of intelligence is not evidence of benignity."
+    },
+    "reputation": {
+      "type": "string",
+      "description": "Normalized provider opinion. This is supporting evidence only and never establishes what happened in your environment.",
+      "enum": ["UNKNOWN", "CLEAN", "SUSPICIOUS", "MALICIOUS"]
+    },
+    "score": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Provider score normalized to 0-100. Null when the provider returned no score."
+    },
+    "detections": {
+      "type": "object",
+      "description": "Multi-engine detection counts, where the provider reports them.",
+      "properties": {
+        "malicious": { "type": "integer", "minimum": 0 },
+        "suspicious": { "type": "integer", "minimum": 0 },
+        "harmless": { "type": "integer", "minimum": 0 },
+        "undetected": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "Provider context that helps an analyst judge relevance.",
+      "properties": {
+        "country": { "type": "string" },
+        "asn": { "type": ["string", "integer"] },
+        "as_owner": { "type": "string" },
+        "is_public": { "type": "boolean" },
+        "usage_type": { "type": "string" },
+        "last_seen": { "type": ["string", "null"] },
+        "total_reports": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "caveats": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Machine-readable warnings that must be surfaced with the result, e.g. that the indicator is an RFC 1918 address, a known CDN, or has stale reporting."
+    },
+    "raw_provider_reference": {
+      "type": ["string", "null"],
+      "description": "Permalink to the provider record for analyst verification. Never a raw API response containing a key."
+    }
+  },
+  "required": ["indicator", "indicator_type", "source", "found", "reputation"],
+  "additionalProperties": false
+}

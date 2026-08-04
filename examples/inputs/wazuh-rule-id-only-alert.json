@@ -1,0 +1,19 @@
+{
+  "body": {
+    "token": "SLACK_VERIFICATION_TOKEN_PLACEHOLDER",
+    "team_id": "T0EXAMPLE001",
+    "api_app_id": "A0EXAMPLE001",
+    "event": {
+      "type": "message",
+      "channel": "C0EXAMPLE001",
+      "user": "U0EXAMPLE001",
+      "text": "{\"_index\": \"wazuh-alerts-4.x-2026.08.03\", \"_id\": \"EXAMPLE-ALERT-0003\", \"_source\": {\"timestamp\": \"2026-08-03T09:48:55.001+0000\", \"rule\": {\"id\": \"31151\", \"level\": 10, \"description\": \"Multiple web server 400 error codes from same source IP.\", \"groups\": [\"web\", \"accesslog\", \"web_scan\"], \"firedtimes\": 3, \"mitre\": {\"id\": [\"T1595\"], \"tactic\": [\"Reconnaissance\"], \"technique\": [\"Active Scanning\"]}}}}",
+      "ts": "1735689800.000300",
+      "event_ts": "1735689800.000300",
+      "channel_type": "channel"
+    },
+    "type": "event_callback",
+    "event_id": "Ev0EXAMPLE001",
+    "event_time": 1735689600
+  }
+}

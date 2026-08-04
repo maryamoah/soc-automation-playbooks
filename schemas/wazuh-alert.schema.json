@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maryamoah/soc-automation-playbooks/schemas/wazuh-alert.schema.json",
+  "title": "Wazuh alert document",
+  "description": "Subset of the Wazuh alert document that the AI SOC Assistant classifier actually reads. Wazuh emits many more fields; only those consulted by the workflow (or commonly present in the examples) are constrained here. Status: describes real input consumed by the implemented workflow.",
+  "type": "object",
+  "properties": {
+    "_index": {
+      "type": "string",
+      "description": "Index name. A value starting with 'wazuh-' is one of the signals for the wazuh_json classification fallback.",
+      "examples": ["wazuh-alerts-4.x-2026.08.03"]
+    },
+    "_id": { "type": "string" },
+    "_source": { "$ref": "#/$defs/source" }
+  },
+  "anyOf": [
+    { "required": ["_source"] },
+    { "required": ["rule"] },
+    { "required": ["agent"] },
+    { "required": ["manager"] }
+  ],
+  "$defs": {
+    "source": {
+      "type": "object",
+      "description": "The alert body. The classifier reads parsed._source ?? parsed, so these fields may also appear at the document root.",
+      "properties": {
+        "timestamp": { "type": "string" },
+        "rule": { "$ref": "#/$defs/rule" },
+        "agent": { "$ref": "#/$defs/agent" },
+        "manager": {
+          "type": "object",
+          "properties": { "name": { "type": "string" } }
+        },
+        "cluster": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "node": { "type": "string" }
+          }
+        },
+        "decoder": {
+          "type": "object",
+          "description": "Decoder metadata. decoder.name drives classification for windows_eventchannel, fortigate, paloalto, f5 and linux.",
+          "properties": { "name": { "type": "string" } }
+        },
+        "predecoder": {
+          "type": "object",
+          "description": "predecoder.program_name === 'cef' is one half of the Trend Micro CEF classification test.",
+          "properties": {
+            "program_name": { "type": "string" },
+            "timestamp": { "type": "string" },
+            "hostname": { "type": "string" }
+          }
+        },
+        "data": { "type": "object" },
+        "full_log": { "type": "string" },
+        "location": { "type": "string" },
+        "id": { "type": "string" }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "description": "Detection metadata. Explains why the alert fired. Per the system prompts this is NOT evidence that malicious activity occurred.",
+      "properties": {
+        "id": { "type": "string" },
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16,
+          "description": "Wazuh rule level. Mapped to severity by the Wazuh prompt as 0-2 Informational, 3-5 Low, 6-9 Medium, 10-12 High, 13-16 Critical. The numeric value must not be printed in the report."
+        },
+        "description": { "type": "string" },
+        "groups": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Rule groups. Drives classification for windows, windows_security, fortigate, paloalto, f5, trendmicro and linux."
+        },
+        "firedtimes": { "type": "integer", "minimum": 0 },
+        "mail": { "type": "boolean" },
+        "mitre": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "array", "items": { "type": "string" } },
+            "tactic": { "type": "array", "items": { "type": "string" } },
+            "technique": { "type": "array", "items": { "type": "string" } }
+          },
+          "description": "A mapping on the rule. Never sufficient on its own to conclude the technique executed."
+        }
+      },
+      "required": ["id"]
+    },
+    "agent": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "ip": { "type": "string" }
+      }
+    }
+  }
+}

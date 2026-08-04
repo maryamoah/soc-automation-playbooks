@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maryamoah/soc-automation-playbooks/schemas/ai-triage-result.schema.json",
+  "title": "Normalized AI triage result",
+  "description": "PLANNED STRUCTURE — the AI SOC Assistant does not currently emit JSON. The shipped workflow passes the model's plain-text reply straight to Slack with no parsing or validation (see workflows/n8n/ai-soc-assistant/node-reference.md, node 7). This schema defines the machine-readable target for the planned parsing stage (docs/roadmap.md item 2) and constrains the normalized-verdict examples in examples/outputs/. Note that the deployed prompts emit a natural-language verdict vocabulary (Malicious, Suspicious, Benign, False Positive, Requires Investigation); the mapping to the normalized enum below is documented in docs/ai-safety-and-limitations.md.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this triage contract.",
+      "const": "1.0.0"
+    },
+    "verdict": {
+      "type": "string",
+      "description": "Normalized machine verdict. INSUFFICIENT_EVIDENCE is the required value whenever the supplied evidence cannot decide between a benign and a malicious explanation — it is a legitimate answer, not a failure.",
+      "enum": [
+        "TRUE_POSITIVE",
+        "FALSE_POSITIVE",
+        "SUSPICIOUS",
+        "INFORMATIONAL",
+        "INSUFFICIENT_EVIDENCE"
+      ]
+    },
+    "confidence": {
+      "type": "string",
+      "description": "Confidence in the assessment, reflecting the completeness and reliability of the available evidence — NOT the severity of the event, and NOT a calibrated probability. This is a model self-report and must not be treated as a measured quantity.",
+      "enum": ["LOW", "MEDIUM", "HIGH"]
+    },
+    "severity": {
+      "type": "string",
+      "description": "Immediate operational impact of the observed event. Derived from the event, not from the source rule's own level.",
+      "enum": ["INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "overall_risk": {
+      "type": "string",
+      "description": "Likelihood that the activity represents a genuine security incident, assessed independently of severity. A high-severity alert for blocked activity with no evidence of compromise is low overall risk.",
+      "enum": ["INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "source_type": {
+      "type": "string",
+      "description": "Classifier output that selected the analyst prompt.",
+      "enum": ["windows", "fortigate", "paloalto", "f5", "cef", "linux", "wazuh_json", "hash", "ip", "general"]
+    },
+    "summary": {
+      "type": "string",
+      "description": "Factual description of what happened, using observable facts only. No conclusions, no speculation, no MITRE mappings.",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "array",
+      "description": "Directly observable facts from the event only. Rule names, rule descriptions, alert groups, MITRE mappings, interpretations and assumptions are excluded by construction.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Meaningful evidence name, e.g. 'Source IP', 'Target Account', 'Process Name'. Never a generic label.",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string",
+            "description": "Value preserved exactly as it appeared in the event.",
+            "minLength": 1
+          }
+        },
+        "required": ["field", "value"],
+        "additionalProperties": false
+      }
+    },
+    "assessment": {
+      "type": "string",
+      "description": "What the evidence supports, what cannot be confirmed, the most likely explanations, and why the verdict is appropriate.",
+      "minLength": 1
+    },
+    "recommended_actions": {
+      "type": "array",
+      "description": "Investigation steps that reduce uncertainty. Never generic filler such as 'investigate further' or 'continue monitoring'. Response actions requiring approval must be flagged, not stated as instructions.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "missing_information": {
+      "type": "array",
+      "description": "Information that would materially raise confidence. Required in every result; use a single entry of 'None' when nothing further would change the verdict.",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "mitre_attack": {
+      "type": "array",
+      "description": "Techniques included ONLY where observable evidence independently supports them. A mapping present on the detection rule is not sufficient. An empty array is the correct value in most cases.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "technique_id": { "type": "string", "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$" },
+          "technique_name": { "type": "string" },
+          "tactic": { "type": "string" },
+          "supporting_evidence": {
+            "type": "string",
+            "description": "The specific observable that supports this mapping. Required — a mapping without it must be omitted.",
+            "minLength": 1
+          }
+        },
+        "required": ["technique_id", "supporting_evidence"],
+        "additionalProperties": false
+      }
+    },
+    "enrichment": {
+      "type": "array",
+      "description": "Threat-intelligence results considered, if any. PLANNED — the current workflow performs no enrichment, so this is always absent or empty today.",
+      "items": { "$ref": "enrichment-result.schema.json" }
+    },
+    "analyst_review_required": {
+      "type": "boolean",
+      "description": "Always true in this system. No consequential action may be taken on this result without human approval. Present as an explicit field so downstream consumers cannot treat its absence as permission.",
+      "const": true
+    },
+    "automated_action_taken": {
+      "type": "boolean",
+      "description": "Always false in this system. The workflow has no write path into any security control.",
+      "const": false
+    }
+  },
+  "required": [
+    "verdict",
+    "confidence",
+    "severity",
+    "overall_risk",
+    "summary",
+    "evidence",
+    "assessment",
+    "missing_information",
+    "analyst_review_required",
+    "automated_action_taken"
+  ],
+  "additionalProperties": false
+}

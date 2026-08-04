@@ -151,7 +151,13 @@ flowchart TD
     style X fill:#5a3a3a,color:#fff
     style K fill:#2d4a2d,color:#fff
 ```
+![Slack analysis](assets/screenshots/ai-soc-assistant-slack-analysis.png)
 
+*Trend Micro DDI web-reputation detection. The verdict is Requires
+Investigation, not Malicious: Trend Micro did not block the activity, and the
+event provides behavioural indicators without confirming exploitation. The
+report names what is missing — threat intelligence, WRS score, and context on
+the connection's legitimacy — rather than guessing a verdict.*
 Source: [`diagrams/architecture.mmd`](diagrams/architecture.mmd). Data flow,
 classifier decision logic and stage sequencing are rendered in
 [`diagrams/README.md`](diagrams/README.md).

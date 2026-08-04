@@ -18,15 +18,15 @@ Then set the security contact, which `SECURITY.md` and `CODE_OF_CONDUCT.md`
 both point at:
 
 ```bash
-sed -i 's|security@example.com|your.real@email|' .github/CODEOWNERS
+sed -i 's|techiesiwaamoah@gmail.com|your.real@email|' .github/CODEOWNERS
 ```
 
 **CODEOWNERS caveat.** It ships referencing a GitHub *team*
-(`@your-org/soc-automation`). Teams only exist inside organisations. On a
+(`@maryamoah/soc-automation`). Teams only exist inside organisations. On a
 personal account, replace the team with your username:
 
 ```bash
-sed -i 's|@YOUR-GITHUB-USERNAME/soc-automation|@YOUR-GITHUB-USERNAME|g' \
+sed -i 's|@maryamoah/soc-automation|@YOUR-GITHUB-USERNAME|g' \
   .github/CODEOWNERS
 ```
 
@@ -36,7 +36,7 @@ break anything — it just will not do anything either.
 ## 2. Verify
 
 ```bash
-grep -rn 'your-org\|security@example.com' . --exclude-dir=.git || \
+grep -rn 'maryamoah\|techiesiwaamoah@gmail.com' . --exclude-dir=.git || \
   echo "No placeholders remain."
 
 python3 scripts/validate_json.py
@@ -73,7 +73,7 @@ git init -b main
 git add .
 git status                      # read this properly before committing
 git commit -m "feat: initial release — AI SOC Assistant n8n workflow"
-git remote add origin git@github.com:YOUR-GITHUB-USERNAME/soc-automation-playbooks.git
+git remote add origin git@github.com:maryamoah/soc-automation-playbooks.git
 git push -u origin main
 ```
 

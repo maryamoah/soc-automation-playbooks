@@ -1,8 +1,8 @@
 # soc-automation-playbooks
 
-[![JSON validation](https://github.com/your-org/soc-automation-playbooks/actions/workflows/json-validation.yml/badge.svg)](https://github.com/your-org/soc-automation-playbooks/actions/workflows/json-validation.yml)
-[![Secret scan](https://github.com/your-org/soc-automation-playbooks/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/your-org/soc-automation-playbooks/actions/workflows/secret-scan.yml)
-[![Python validation](https://github.com/your-org/soc-automation-playbooks/actions/workflows/python-validation.yml/badge.svg)](https://github.com/your-org/soc-automation-playbooks/actions/workflows/python-validation.yml)
+[![JSON validation](https://github.com/maryamoah/soc-automation-playbooks/actions/workflows/json-validation.yml/badge.svg)](https://github.com/maryamoah/soc-automation-playbooks/actions/workflows/json-validation.yml)
+[![Secret scan](https://github.com/maryamoah/soc-automation-playbooks/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/maryamoah/soc-automation-playbooks/actions/workflows/secret-scan.yml)
+[![Python validation](https://github.com/maryamoah/soc-automation-playbooks/actions/workflows/python-validation.yml/badge.svg)](https://github.com/maryamoah/soc-automation-playbooks/actions/workflows/python-validation.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Reusable SOC automation and SOAR playbooks built with [n8n](https://n8n.io),
@@ -252,7 +252,7 @@ soc-automation-playbooks/
 model pulled, and a Slack app with the Events API enabled.
 
 ```bash
-git clone https://github.com/<your-org>/soc-automation-playbooks.git
+git clone https://github.com/maryamoah/soc-automation-playbooks.git
 cd soc-automation-playbooks
 cp .env.example .env        # fill this in — nothing is read from it automatically
 ```

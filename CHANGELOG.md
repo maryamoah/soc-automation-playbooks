@@ -53,4 +53,4 @@ model response, three unconnected classifier routes that drop input silently, no
 alert aggregation, no retry or error branch, no Slack signature verification,
 and no rate limiting.
 
-[1.0.0]: https://github.com/your-org/soc-automation-playbooks/releases/tag/v1.0.0
+[1.0.0]: https://github.com/maryamoah/soc-automation-playbooks/releases/tag/v1.0.0

@@ -1,0 +1,25 @@
+# Ruff configuration
+#
+# The rule set is pinned explicitly rather than left to ruff's defaults.
+# Defaults drift between releases — an unpinned linter turns "someone released
+# a new ruff" into "the build is red on a repository nobody touched". CI runs
+# on pushes to a documentation-heavy repo, so a stable rule set matters more
+# than catching every new lint.
+#
+# EXE001 (shebang present but file not executable) is worth a note: the scripts
+# are always invoked as `python3 scripts/foo.py`, never `./scripts/foo.py`, and
+# the executable bit does not survive a web upload to GitHub. The shebangs were
+# therefore removed rather than the rule suppressed.
+
+target-version = "py39"
+line-length = 100
+
+[lint]
+select = [
+    "E4",    # imports
+    "E7",    # statement-level errors
+    "E9",    # syntax / runtime errors
+    "F",     # pyflakes: unused imports, undefined names
+    "PERF",  # obvious performance mistakes
+    "EXE",   # shebang / executable-bit consistency
+]

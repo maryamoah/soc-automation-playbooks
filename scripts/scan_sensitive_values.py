@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 scan_sensitive_values.py
 ========================
@@ -26,7 +25,6 @@ from __future__ import annotations
 import argparse
 import ipaddress
 import re
-import sys
 from pathlib import Path
 
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv", "__pycache__", ".mypy_cache", "dist"}

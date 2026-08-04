@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 sanitize_n8n_export.py
 ======================

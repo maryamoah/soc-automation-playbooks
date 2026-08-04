@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 validate_json.py
 ================
@@ -30,7 +29,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv", "__pycache__", ".mypy_cache"}
@@ -111,7 +109,7 @@ def check_n8n_export(path: Path, doc: object, results: Results) -> None:
         if not isinstance(outputs, dict):
             results.error(path, f"connections[{source!r}] is not an object")
             continue
-        for _kind, output_list in outputs.items():
+        for output_list in outputs.values():
             if not isinstance(output_list, list):
                 continue
             for output in output_list:
@@ -146,7 +144,7 @@ def check_n8n_export(path: Path, doc: object, results: Results) -> None:
         reachable: set[str] = set()
         for source, outputs in connections.items():
             reachable.add(source)
-            for _kind, output_list in outputs.items():
+            for output_list in outputs.values():
                 if not isinstance(output_list, list):
                     continue
                 for output in output_list:

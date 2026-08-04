@@ -28,8 +28,10 @@ jobs:
       - name: Byte-compile
         run: python3 -m compileall -q scripts/
 
+      # Rule selection is pinned in ruff.toml so a new ruff release cannot
+      # turn this build red on its own.
       - name: Ruff
-        run: ruff check scripts/ --output-format=github
+        run: ruff check scripts/ --config ruff.toml --output-format=github
 
   matrix:
     name: Run scripts on Python ${{ matrix.python-version }}

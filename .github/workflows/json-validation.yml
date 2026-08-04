@@ -1,0 +1,51 @@
+name: JSON validation
+
+on:
+  push:
+    branches: [main]
+    paths: ['**.json', 'scripts/**', '.github/workflows/json-validation.yml']
+  pull_request:
+    paths: ['**.json', 'scripts/**', '.github/workflows/json-validation.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate JSON and schemas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install jsonschema
+        run: pip install --no-cache-dir jsonschema
+
+      # Structure: every file parses, schemas look like schemas, n8n exports
+      # have unique node names, no connection points at a missing node, and
+      # sanitized exports carry no instance IDs or pinned data.
+      - name: Validate JSON structure
+        run: python3 scripts/validate_json.py
+
+      # Examples against schemas. jsonschema is installed above so this runs
+      # with full coverage rather than the bundled fallback validator.
+      - name: Validate examples against schemas
+        run: python3 scripts/validate_examples.py
+
+      # A sanitized export must import cleanly. This asserts the placeholders
+      # the documentation tells people to replace are actually present.
+      - name: Assert sanitized export placeholders
+        run: |
+          set -euo pipefail
+          EXPORT=workflows/n8n/ai-soc-assistant/ai-soc-assistant.sanitized.json
+          for token in OLLAMA_BASE_URL SLACK_BOT_USER_ID SLACK_CREDENTIAL_ID; do
+            grep -q "$token" "$EXPORT" || {
+              echo "::error file=$EXPORT::expected placeholder '$token' is missing"
+              exit 1
+            }
+          done
+          echo "All expected placeholders present."

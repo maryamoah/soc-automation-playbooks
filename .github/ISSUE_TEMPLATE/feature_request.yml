@@ -1,0 +1,65 @@
+name: Feature request
+description: Suggest an improvement to a workflow, script or documentation
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check [`docs/roadmap.md`](https://github.com/maryamoah/soc-automation-playbooks/blob/main/docs/roadmap.md)
+        first — it may already be planned, in which case comment there instead.
+
+        Note also the *explicitly not planned* section. Automated blocking on a
+        model verdict and automated alert closure are out of scope by design,
+        not by oversight.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - AI SOC Assistant workflow
+        - New log source / prompt
+        - Validation or sanitization tooling
+        - Schemas
+        - Documentation
+        - CI / GitHub Actions
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: roadmap
+    attributes:
+      label: Related roadmap item
+      description: Number from docs/roadmap.md, if any.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the problem, not the solution. What goes wrong today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      description: This project keeps a human in the decision path by construction.
+      options:
+        - label: This does not let the workflow act on a security control without explicit analyst approval
+          required: true
+        - label: This does not treat model output as authoritative
+          required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

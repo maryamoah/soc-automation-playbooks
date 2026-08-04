@@ -1,0 +1,82 @@
+name: Workflow request
+description: Request a new SOC automation workflow or playbook
+labels: ["workflow", "enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Requests for new workflows are welcome. Two things to know first:
+
+        - Workflows are published only once they **actually run**. A design gets
+          documented under `planned/` and stays labelled `Not built` until a
+          working, sanitized export and its full documentation set exist.
+        - This project runs on n8n + Ollama + Slack. Shuffle is **not deployed**,
+          so a Shuffle request is a request to adopt a new platform.
+        - Anything that can block, isolate, disable or close requires an
+          approval gate meeting every requirement in
+          [`docs/human-in-the-loop.md`](https://github.com/maryamoah/soc-automation-playbooks/blob/main/docs/human-in-the-loop.md).
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - n8n (the platform this project uses)
+        - Shuffle (not currently deployed — would require adopting it)
+        - Either / no preference
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What SOC problem does this solve? Who uses it, and when?
+    validations:
+      required: true
+
+  - type: textarea
+    id: trigger
+    attributes:
+      label: Trigger
+      description: What starts it — an analyst, an alert, a schedule?
+    validations:
+      required: true
+
+  - type: textarea
+    id: integrations
+    attributes:
+      label: Integrations required
+      placeholder: |
+        Wazuh, TheHive, Cortex, Slack, VirusTotal ...
+        Note which you already have running.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: actions
+    attributes:
+      label: Does it take action on security controls?
+      options:
+        - "No — read, analyse and notify only"
+        - "Yes — reversible, low impact (tag, comment, ticket)"
+        - "Yes — consequential (block, isolate, disable, quarantine)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: approval
+    attributes:
+      label: If it takes consequential action, describe the approval gate
+      description: |
+        Who approves, what evidence they are shown, what the rollback is, and
+        what happens on timeout. See docs/human-in-the-loop.md.
+
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to build this
+        - label: I can provide a sanitized export
+        - label: I can provide synthetic test data

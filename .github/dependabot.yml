@@ -1,0 +1,32 @@
+version: 2
+
+updates:
+  # This repository has no application dependencies — the validation scripts
+  # are deliberately dependency-free so a fresh clone works with no install
+  # step. The only thing to keep current is the GitHub Actions used in CI,
+  # where a stale or compromised action is a real supply-chain risk.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"
+
+  # Enabled only so a requirements.txt added later is covered automatically.
+  # Harmless while none exists.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "chore(deps)"

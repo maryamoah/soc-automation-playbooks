@@ -1,0 +1,99 @@
+name: Markdown lint
+
+on:
+  push:
+    branches: [main]
+    paths: ['**.md', '.github/workflows/markdown-lint.yml']
+  pull_request:
+    paths: ['**.md', '.github/workflows/markdown-lint.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: '**/*.md'
+        continue-on-error: true
+
+  links:
+    name: Check internal links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Internal links only. External URLs are not fetched: CI should not fail
+      # because someone else's site is down, and this repo links to vendor docs
+      # that move.
+      - name: Resolve relative links and anchors
+        run: |
+          python3 - . <<'CHECKER'
+          #!/usr/bin/env python3
+          """Check relative Markdown links and heading anchors. Internal only."""
+          import re, sys, unicodedata
+          from pathlib import Path
+
+          ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
+          LINK = re.compile(r'(?<!!)\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
+          HEAD = re.compile(r'^(#{1,6})\s+(.*?)\s*#*\s*$', re.M)
+
+          def slug(text):
+              t = re.sub(r'`([^`]*)`', r'\1', text)
+              t = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', t)
+              t = ''.join(c for c in unicodedata.normalize('NFKD', t) if not unicodedata.combining(c))
+              t = t.lower()
+              t = re.sub(r'[^\w\s-]', '', t)
+              return re.sub(r'\s', '-', t.strip())
+
+          anchors = {}
+          md_files = sorted(p for p in ROOT.rglob("*.md") if ".git" not in p.parts)
+          for p in md_files:
+              seen, out = {}, set()
+              for _, title in HEAD.findall(p.read_text(encoding="utf-8")):
+                  s = slug(title)
+                  if s in seen:
+                      seen[s] += 1
+                      s = f"{s}-{seen[s]}"
+                  else:
+                      seen[s] = 0
+                  out.add(s)
+              anchors[p.resolve()] = out
+
+          errors = []
+          for p in md_files:
+              rel = p.relative_to(ROOT)
+              for text, target in LINK.findall(p.read_text(encoding="utf-8")):
+                  if target.startswith(("http://", "https://", "mailto:", "#!")):
+                      continue
+                  if target.startswith("#"):
+                      path_part, anchor = p, target[1:]
+                  else:
+                      path_part, _, anchor = target.partition("#")
+                      path_part = (p.parent / path_part).resolve()
+                  if not Path(path_part).exists():
+                      errors.append(f"{rel}: broken path -> {target}  [{text}]")
+                      continue
+                  if anchor and Path(path_part).suffix == ".md":
+                      if anchor.lower() not in anchors.get(Path(path_part), set()):
+                          errors.append(f"{rel}: missing anchor -> {target}  [{text}]")
+
+          print(f"Checked {len(md_files)} Markdown files.")
+          if errors:
+              for e in errors:
+                  print(f"  FAIL  {e}")
+              print(f"\n{len(errors)} broken internal link(s).")
+              sys.exit(1)
+          print("All internal links resolve.")
+          CHECKER

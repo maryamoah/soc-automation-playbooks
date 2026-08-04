@@ -1,0 +1,60 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.local.json
+*.local.yml
+secrets/
+credentials/
+
+# Sanitizer replacement map: its KEYS are the sensitive literals themselves.
+scripts/sanitize-map.json
+!scripts/sanitize-map.example.json
+
+# Raw, unsanitized n8n exports — never commit these
+*.raw.json
+raw-export*.json
+*-unsanitized.json
+n8n-export-*.json
+
+# Sensitive artefacts
+*.pem
+*.key
+*.p12
+*.pfx
+*_rsa
+*_ed25519
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Build output
+dist/
+build/
+*.zip
+!soc-automation-playbooks.zip
+
+# Screenshots pending redaction — see assets/screenshots/README.md
+assets/screenshots/*-unredacted.*
+assets/screenshots/raw/

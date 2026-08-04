@@ -1,0 +1,29 @@
+# Code owners
+#
+# Security contact: techiesiwaamoah@gmail.com
+# SECURITY.md and CODE_OF_CONDUCT.md both point here for a contact address.
+#
+# Note: these rules auto-request review on pull requests touching the listed
+# paths. On a single-maintainer repository they rarely fire, because GitHub does
+# not request a review from the author of a pull request. They become useful the
+# moment anyone else contributes.
+
+* @maryamoah
+
+# Workflow exports and prompts carry the highest risk of leaking real data or
+# silently removing an analytic guard rail. Review these deliberately.
+/workflows/                        @maryamoah
+
+# Sanitization and scanning: a bug here publishes secrets.
+/scripts/                          @maryamoah
+
+# Security-relevant documentation.
+/SECURITY.md                       @maryamoah
+/docs/security-model.md            @maryamoah
+/docs/threat-model.md              @maryamoah
+/docs/secrets-management.md        @maryamoah
+/docs/human-in-the-loop.md         @maryamoah
+/docs/ai-safety-and-limitations.md @maryamoah
+
+# CI: changes here can disable the checks that keep secrets out.
+/.github/workflows/                @maryamoah

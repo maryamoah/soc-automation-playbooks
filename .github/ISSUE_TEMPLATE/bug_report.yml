@@ -1,0 +1,89 @@
+name: Bug report
+description: Something in this repository does not work as documented
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before opening:** check [Known limitations](https://github.com/maryamoah/soc-automation-playbooks#known-limitations)
+        and the workflow's `troubleshooting.md`. Several behaviours that look
+        like bugs are documented defects — for example, an input classified as
+        `ip`, `hash` or `linux` produces no reply at all, because those Switch
+        outputs are unconnected.
+
+        **Never paste real data.** No tokens, credential IDs, internal
+        hostnames, private addressing, or real security events. Redact before
+        submitting.
+
+  - type: checkboxes
+    id: prechecks
+    attributes:
+      label: Checks
+      options:
+        - label: I have read the Known limitations section
+          required: true
+        - label: I have read the workflow's troubleshooting.md
+          required: true
+        - label: My report contains no credentials, internal hostnames, or real security events
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - AI SOC Assistant (n8n workflow)
+        - Validation or sanitization scripts
+        - Schemas
+        - Examples
+        - Documentation
+        - CI / GitHub Actions
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you observed, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Import the workflow
+        2. Post a redacted event of type X
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution
+    attributes:
+      label: n8n execution detail
+      description: |
+        If the workflow ran, this is the most useful thing you can provide.
+        Which node ran last? What `input_type` did the Classifier output? Which
+        Switch output did the item take? **Redact any real data.**
+
+  - type: input
+    id: n8n-version
+    attributes:
+      label: n8n version
+
+  - type: input
+    id: model
+    attributes:
+      label: Ollama model
+      placeholder: "qwen3:14b"
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation script output
+      description: Output of any failing script.
+      render: shell

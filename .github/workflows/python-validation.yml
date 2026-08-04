@@ -1,0 +1,99 @@
+name: Python validation
+
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/**', '.github/workflows/python-validation.yml']
+  pull_request:
+    paths: ['scripts/**', '.github/workflows/python-validation.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint and compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install tooling
+        run: pip install --no-cache-dir ruff
+
+      - name: Byte-compile
+        run: python3 -m compileall -q scripts/
+
+      - name: Ruff
+        run: ruff check scripts/ --output-format=github
+
+  matrix:
+    name: Run scripts on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # No dependencies installed here on purpose: the scripts must work on a
+      # fresh clone. validate_examples.py falls back to its bundled validator
+      # when jsonschema is absent, and this job is what proves that still works.
+      - name: validate_json.py
+        run: python3 scripts/validate_json.py --quiet
+
+      - name: validate_examples.py (no jsonschema installed)
+        run: python3 scripts/validate_examples.py
+
+      - name: scan_sensitive_values.py
+        run: python3 scripts/scan_sensitive_values.py
+
+  sanitizer:
+    name: Sanitizer self-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Re-sanitizing an already-sanitized export must be a no-op and exit 0.
+      # If this fails, the sanitizer is either destructive or non-idempotent.
+      - name: Sanitizer is idempotent
+        run: |
+          set -euo pipefail
+          EXPORT=workflows/n8n/ai-soc-assistant/ai-soc-assistant.sanitized.json
+          python3 scripts/sanitize_n8n_export.py "$EXPORT" /tmp/again.json
+          python3 - <<'PY'
+          import json
+          a = json.load(open("workflows/n8n/ai-soc-assistant/ai-soc-assistant.sanitized.json"))
+          b = json.load(open("/tmp/again.json"))
+          assert a == b, "sanitizer is not idempotent"
+          print("Sanitizer idempotent.")
+          PY
+
+      # And it must actually catch a planted secret.
+      - name: Sanitizer detects residual secrets
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          wf = json.load(open("workflows/n8n/ai-soc-assistant/ai-soc-assistant.sanitized.json"))
+          wf["nodes"][0]["parameters"]["path"] = "https://evil.ngrok-free.app/hook"
+          json.dump(wf, open("/tmp/planted.json", "w"))
+          PY
+          if python3 scripts/sanitize_n8n_export.py /tmp/planted.json /tmp/out.json; then
+            echo "::error::sanitizer exited 0 on an export containing a tunnel URL"
+            exit 1
+          fi
+          echo "Sanitizer correctly flagged the planted value."
